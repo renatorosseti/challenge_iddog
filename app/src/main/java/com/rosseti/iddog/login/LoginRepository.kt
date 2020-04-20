@@ -1,10 +1,18 @@
 package com.rosseti.iddog.login
 
-import io.reactivex.Single
+import com.rosseti.iddog.api.TmdbApi
+import com.rosseti.iddog.model.AppRxSchedulers
+import com.rosseti.iddog.model.LoginPostData
+import com.rosseti.iddog.model.SignUpResponse
+import io.reactivex.Observable
+import javax.inject.Inject
 
-class LoginRepository {
+class LoginRepository
+@Inject constructor(val api: TmdbApi, val rxSchedulers: AppRxSchedulers) {
 
-    fun loadUserEmail(): Single<String> {
-        return Single.just("Verify email on `id`dog server.")
+    fun loadUserEmail(email: String): Observable<SignUpResponse> {
+        return api.signUp(LoginPostData(email))
+            .subscribeOn(rxSchedulers.network)
+            .observeOn(rxSchedulers.main)
     }
 }

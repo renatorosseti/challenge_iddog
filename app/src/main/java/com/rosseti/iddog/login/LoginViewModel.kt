@@ -3,9 +3,10 @@ package com.rosseti.iddog.login
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.rosseti.iddog.data.Cache
 import io.reactivex.disposables.CompositeDisposable
 
-class LoginViewModel(val repository: LoginRepository): ViewModel() {
+class LoginViewModel (val repository: LoginRepository): ViewModel() {
 
     val disposable = CompositeDisposable()
 
@@ -18,11 +19,14 @@ class LoginViewModel(val repository: LoginRepository): ViewModel() {
         disposable.clear()
     }
 
-    fun checkEmailLogin() {
-        disposable.add(repository.loadUserEmail()
+    fun checkEmailLogin(email: String) {
+        disposable.add(repository.loadUserEmail(email)
             .subscribe (
-                { response.value = LoginViewState(it)},
-                { e -> Log.e(TAG,"error:  $e")}
+                {
+                    Log.i(TAG,"Aqui estou")
+                    Cache.cacheApiToken(it.token)
+                    response.value = LoginViewState(it.token)},
+                { e -> Log.e(TAG,"error:  ${e.message} + ${e.cause}")}
             )
         )
     }
