@@ -5,14 +5,16 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.rosseti.iddog.data.Cache
 import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.disposables.Disposable
 
-class LoginViewModel (val repository: LoginRepository): ViewModel() {
-
-    val disposable = CompositeDisposable()
+class LoginViewModel (
+    private val repository: LoginRepository): ViewModel() {
 
     val response = MutableLiveData<LoginViewState>()
 
-    val TAG = LoginViewModel::class.simpleName
+    private val disposable = CompositeDisposable()
+
+    private val TAG = LoginViewModel::class.simpleName
 
     override fun onCleared() {
         super.onCleared()
@@ -20,15 +22,22 @@ class LoginViewModel (val repository: LoginRepository): ViewModel() {
     }
 
     fun checkEmailLogin(email: String) {
-        disposable.add(repository.loadUserEmail(email)
+        response.value = LoginViewState.ShowLoadingState
+        val loadUserEmail: Disposable = repository.loadUserEmail(email)
             .subscribe (
                 {
-                    Log.i(TAG,"Aqui estou")
-                    Cache.cacheApiToken(it.token)
-                    response.value = LoginViewState(it.token)},
-                { e -> Log.e(TAG,"error:  ${e.message} + ${e.cause}")}
+                    Cache.apiToken = it.user.token
+                    if (it.user != null && it.user.token.isNotEmpty()){
+                        response.value = LoginViewState.ShowMainScreen
+                    } else {
+                        response.value = LoginViewState.ShowRequestError(it.error.message)
+                    }
+                },
+                {
+                    response.value = LoginViewState.ShowRequestError("Error: Email not valid.")
+                    Log.e(TAG,"Error: ${it.message}")
+                }
             )
-        )
+        disposable.add(loadUserEmail)
     }
-
 }
