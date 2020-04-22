@@ -5,7 +5,7 @@ import android.content.Context
 import com.rosseti.iddog.R
 
 object ErrorDialog {
-    private lateinit var internetDialog: AlertDialog
+    private lateinit var errorDialog: AlertDialog
     private lateinit var builder: AlertDialog.Builder
 
     fun show(context: Context, message: String) {
@@ -14,10 +14,10 @@ object ErrorDialog {
             builder.setNegativeButton(R.string.ok) { dialog, _ ->
                 dialog.dismiss()
             }
-            internetDialog = builder.create()
+            errorDialog = builder.create()
         }
-        internetDialog.setMessage(message)
-        internetDialog.show()
+        errorDialog.setMessage(message)
+        errorDialog.show()
     }
 }
 

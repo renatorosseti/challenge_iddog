@@ -1,4 +1,4 @@
-package com.rosseti.iddog.di
+package com.rosseti.iddog.login
 
 import com.rosseti.iddog.IddogApp
 import com.rosseti.iddog.login.LoginRepository

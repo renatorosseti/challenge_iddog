@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@+id/navigation_husky">
+
+    <fragment
+        android:id="@+id/navigation_husky"
+        android:name="com.rosseti.iddog.main.ui.MainFragment"
+        android:label="@string/title_husky"
+        tools:layout="@layout/fragment_main" />
+
+    <fragment
+        android:id="@+id/navigation_hound"
+        android:name="com.rosseti.iddog.main.ui.MainFragment"
+        android:label="@string/title_hound"
+        tools:layout="@layout/fragment_main" />
+
+    <fragment
+        android:id="@+id/navigation_pug"
+        android:name="com.rosseti.iddog.main.ui.MainFragment"
+        android:label="@string/title_pug"
+        tools:layout="@layout/fragment_main" />
+
+    <fragment
+        android:id="@+id/navigation_labrador"
+        android:name="com.rosseti.iddog.main.ui.MainFragment"
+        android:label="@string/title_labrador"
+        tools:layout="@layout/fragment_main" />
+</navigation>

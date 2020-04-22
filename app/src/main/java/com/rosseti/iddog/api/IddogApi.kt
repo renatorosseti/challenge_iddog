@@ -1,5 +1,6 @@
 package com.rosseti.iddog.api
 
+import com.rosseti.iddog.model.ContentFeed
 import com.rosseti.iddog.model.SignUpResponse
 import io.reactivex.Single
 import retrofit2.http.*
@@ -16,5 +17,6 @@ interface IddogApi {
             @Field("email") email: String
     ): Single<SignUpResponse>
 
-
+    @GET("feed?category=labrador")
+    fun feed(@Header("Authorization") apiToken: String): Single<ContentFeed>
 }

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/navigation_husky"
+        android:icon="@mipmap/ic_husky"
+        android:title="@string/title_husky" />
+
+    <item
+        android:id="@+id/navigation_hound"
+        android:icon="@mipmap/ic_hound"
+        android:title="@string/title_hound" />
+
+    <item
+        android:id="@+id/navigation_pug"
+        android:icon="@mipmap/ic_pug"
+        android:title="@string/title_pug" />
+
+    <item
+        android:id="@+id/navigation_labrador"
+        android:icon="@mipmap/ic_labrador"
+        android:title="@string/title_labrador" />
+
+</menu>

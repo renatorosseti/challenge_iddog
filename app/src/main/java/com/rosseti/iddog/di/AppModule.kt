@@ -1,5 +1,6 @@
 package com.rosseti.iddog.di
 
+import com.rosseti.iddog.login.LoginViewModelModule
 import dagger.Module
 
 @Module(includes = [

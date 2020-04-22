@@ -26,8 +26,9 @@ class LoginViewModel (
         val loadUserEmail: Disposable = repository.loadUserEmail(email)
             .subscribe (
                 {
-                    Cache.apiToken = it.user.token
-                    if (it.user != null && it.user.token.isNotEmpty()){
+                    if (it.user != null && it.user.token.isNotEmpty()) {
+                        Cache.apiToken = it.user.token
+                        Log.i(TAG, "token ${Cache.apiToken}")
                         response.value = LoginViewState.ShowMainScreen
                     } else {
                         response.value = LoginViewState.ShowRequestError(it.error.message)
