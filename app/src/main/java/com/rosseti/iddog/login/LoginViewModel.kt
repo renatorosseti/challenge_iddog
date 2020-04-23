@@ -35,6 +35,8 @@ class LoginViewModel (
     }
 
     fun checkEmailLogin(email: String): LoginViewState? {
+        response.value = LoginViewState.ShowLoadingState
+
         if (email.isEmpty()) {
             response.value = LoginViewState.ShowRequestError(R.string.error_email_empty)
             return response.value
@@ -45,22 +47,22 @@ class LoginViewModel (
             return response.value
         }
 
-        response.value = LoginViewState.ShowLoadingState
         if (Cache.apiToken.isNotEmpty()) {
             response.value = LoginViewState.ShowMainScreen
-        } else {
-            val loadUserEmail: Disposable = repository.loadUserEmail(email)
-                .subscribe (
-                    {
-                        Cache.apiToken = it.user.token
-                        response.value = LoginViewState.ShowMainScreen
-                    },
-                    {
-                        showError(it)
-                    }
-                )
-            disposable.add(loadUserEmail)
+            return response.value
         }
+
+        val loadUserEmail: Disposable = repository.loadUserEmail(email)
+            .subscribe (
+                {
+                    Cache.apiToken = it.user.token
+                    response.value = LoginViewState.ShowMainScreen
+                },
+                {
+                    showError(it)
+                }
+            )
+        disposable.add(loadUserEmail)
 
         return response.value
     }

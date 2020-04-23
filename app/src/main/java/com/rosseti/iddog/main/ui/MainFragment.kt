@@ -77,8 +77,10 @@ class MainFragment : DaggerFragment() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.getItemId()) {
-            R.id.action_retry -> viewModel.fetchFeedContent(category = category)
+        when (item.itemId) {
+            R.id.action_retry -> {
+                viewModel.fetchFeedContentFromService(category = category)
+            }
         }
         return true
     }
