@@ -8,4 +8,5 @@ class MainViewModelModule {
 
     @Provides
     fun providesMainModelView(repository: MainRepository) = MainViewModel(repository)
+
 }

@@ -6,6 +6,10 @@ import androidx.lifecycle.ViewModel
 import com.rosseti.iddog.data.Cache
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
+import com.rosseti.iddog.R
+import com.rosseti.iddog.model.HttpCallFailureException
+import com.rosseti.iddog.model.NoNetworkException
+import com.rosseti.iddog.model.ServerUnreachableException
 
 class LoginViewModel (
     private val repository: LoginRepository): ViewModel() {
@@ -26,19 +30,34 @@ class LoginViewModel (
         val loadUserEmail: Disposable = repository.loadUserEmail(email)
             .subscribe (
                 {
-                    if (it.user != null && it.user.token.isNotEmpty()) {
-                        Cache.apiToken = it.user.token
-                        Log.i(TAG, "token ${Cache.apiToken}")
-                        response.value = LoginViewState.ShowMainScreen
-                    } else {
-                        response.value = LoginViewState.ShowRequestError(it.error.message)
-                    }
+                    Cache.apiToken = it.user.token
+                    response.value = LoginViewState.ShowMainScreen
                 },
                 {
-                    response.value = LoginViewState.ShowRequestError("Error: Email not valid.")
-                    Log.e(TAG,"Error: ${it.message}")
+                    showError(it)
                 }
             )
         disposable.add(loadUserEmail)
+    }
+
+    private fun showError(error: Throwable) {
+        when (error) {
+            is NoNetworkException -> {
+                response.value = LoginViewState.ShowRequestError(R.string.error_internet)
+                Log.e(TAG,"Internet not available. ${error.message}")
+            }
+            is ServerUnreachableException -> {
+                response.value = LoginViewState.ShowRequestError(R.string.error_request)
+                Log.e(TAG,"Server is unreachable. ${error.message}")
+            }
+            is HttpCallFailureException -> {
+                response.value = LoginViewState.ShowRequestError(R.string.error_request)
+                Log.e(TAG,"Call failed. ${error.message}")
+            }
+            else -> {
+                response.value = LoginViewState.ShowRequestError(R.string.error_email)
+                Log.e(TAG,"Error: ${error.message}")
+            }
+        }
     }
 }

@@ -9,7 +9,9 @@
         android:id="@+id/navigation_husky"
         android:name="com.rosseti.iddog.main.ui.MainFragment"
         android:label="@string/title_husky"
-        tools:layout="@layout/fragment_main" />
+        tools:layout="@layout/fragment_main">
+    </fragment>
+
 
     <fragment
         android:id="@+id/navigation_hound"
@@ -28,4 +30,5 @@
         android:name="com.rosseti.iddog.main.ui.MainFragment"
         android:label="@string/title_labrador"
         tools:layout="@layout/fragment_main" />
+
 </navigation>

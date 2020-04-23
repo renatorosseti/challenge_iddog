@@ -2,7 +2,8 @@ package com.rosseti.iddog.login
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.google.common.truth.Truth
-import com.rosseti.iddog.model.Error
+import com.rosseti.iddog.R
+import com.rosseti.iddog.model.NetworkException
 import com.rosseti.iddog.model.SignUpResponse
 import com.rosseti.iddog.model.User
 import io.mockk.MockKAnnotations
@@ -31,17 +32,19 @@ class LoginViewModelTest {
         viewModel = LoginViewModel(loginRepository)
     }
 
-    @Test
-    fun checkEmailLogin() {
-        var email = ""
-        var error = "Error test"
-        every { loginRepository.loadUserEmail(email) } returns Single.just(SignUpResponse(error = Error(message = error), user = User(token = "")))
+    @Test(expected = NetworkException::class)
+    fun checkEmailLogin_whenExceptionOccurs() {
+        val email = "Email test"
+        every { loginRepository.loadUserEmail(email) } throws NetworkException(Throwable())
         viewModel.checkEmailLogin(email)
-        Truth.assertThat(viewModel.response.value).isEqualTo(LoginViewState.ShowRequestError(error))
+        Truth.assertThat(viewModel.response.value).isEqualTo(LoginViewState.ShowRequestError(R.string.error_email))
+    }
 
-        email = "test@test.com"
-        error = ""
-        every { loginRepository.loadUserEmail(email) } returns Single.just(SignUpResponse(error = Error(message = error), user = User(token = "12")))
+    @Test
+    fun checkEmailLogin_whenSucceed() {
+        val email = "Email test"
+        val token = "Token test"
+        every { loginRepository.loadUserEmail(email) } returns Single.just(SignUpResponse(user = User(token = token)))
         viewModel.checkEmailLogin(email)
         Truth.assertThat(viewModel.response.value).isEqualTo(LoginViewState.ShowMainScreen)
     }

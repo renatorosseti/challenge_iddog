@@ -13,8 +13,7 @@ data class InternetUtil(val application: Application) : LiveData<InternetViewSta
 
     private var broadcastReceiver: BroadcastReceiver? = null
 
-
-    fun isInternetAvalable(): Boolean {
+    fun isInternetAvailable(): Boolean {
         val cm = application.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val activeNetwork = cm.activeNetworkInfo
         return activeNetwork != null && activeNetwork.isConnectedOrConnecting

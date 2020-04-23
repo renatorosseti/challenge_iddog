@@ -6,8 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import com.rosseti.iddog.R
 
-
-object ProgressDialog {
+class ProgressDialog {
     private lateinit var progressDialog: AlertDialog
     private lateinit var builder: AlertDialog.Builder
 

@@ -3,7 +3,11 @@ package com.rosseti.iddog.main.ui
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.rosseti.iddog.R
 import com.rosseti.iddog.data.Cache
+import com.rosseti.iddog.model.HttpCallFailureException
+import com.rosseti.iddog.model.NoNetworkException
+import com.rosseti.iddog.model.ServerUnreachableException
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 
@@ -16,26 +20,33 @@ class MainViewModel(
 
     private val TAG = MainViewModel::class.simpleName
 
-    var test = "Main"
 
     override fun onCleared() {
         super.onCleared()
         disposable.clear()
     }
 
-    fun fetchFeedContent() {
+    fun fetchFeedContent(category: String) {
         response.value = MainViewState.ShowLoadingState
-        val loadUserEmail: Disposable = repository.loadFeed(Cache.apiToken)
+        val loadFeedContent: Disposable = repository.loadFeed(category, Cache.apiToken)
             .subscribe (
                 {
-                    Log.i("MainViewModel", "Response: ${it.category}")
-                    Log.i("MainViewModel", "Response: ${it.list}")
+                    response.value = MainViewState.ShowContentFeed(it.list)
                 },
                 {
-                    response.value = MainViewState.ShowRequestError("Error: Email not valid.")
-                    Log.e(TAG,"Error: ${it.message}")
+                    response.value = MainViewState.ShowRequestError(R.string.error_request)
+                    showError(it)
                 }
             )
-        disposable.add(loadUserEmail)
+        disposable.add(loadFeedContent)
+    }
+
+    private fun showError(error: Throwable) {
+        when (error) {
+            is NoNetworkException -> Log.e(TAG,"Internet not available. ${error.message}")
+            is ServerUnreachableException -> Log.e(TAG,"Server is unreachable. ${error.message}")
+            is HttpCallFailureException -> Log.e(TAG,"Call failed. ${error.message}")
+            else -> Log.e(TAG,"Error: ${error.message}.")
+        }
     }
 }

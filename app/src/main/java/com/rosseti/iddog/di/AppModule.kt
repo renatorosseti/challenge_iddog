@@ -6,5 +6,6 @@ import dagger.Module
 @Module(includes = [
     LoginViewModelModule::class,
     SchedulerModule::class,
-    NetworkModule::class])
+    NetworkModule::class,
+    DialogModule::class])
 class AppModule
