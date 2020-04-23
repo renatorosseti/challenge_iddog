@@ -10,7 +10,3 @@ abstract class FragmentBuilder {
     @ContributesAndroidInjector(modules = [AppModule::class])
     abstract fun contributeMainFragment(): MainFragment
 }
-
-
-
-
