@@ -8,9 +8,9 @@
 
     <ProgressBar
         android:id="@+id/loader"
-        android:layout_width="45dp"
-        android:layout_height="45dp"
-        android:layout_marginRight="5dp" />
+        android:layout_width="@dimen/progress_length"
+        android:layout_height="@dimen/progress_length"
+        android:layout_marginRight="@dimen/soft_margin" />
 
     <TextView
         android:id="@+id/loading_msg"
@@ -18,7 +18,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
         android:text="@string/progress_message"
-        android:textSize="16sp"
+        android:textSize="@dimen/text_size_dialog"
         android:textAppearance="?android:textAppearanceSmall" />
 
 </LinearLayout>
