@@ -37,14 +37,14 @@ class MainViewModel(
     }
 
     fun fetchFeedContent(category: String): MainViewState? {
-        if (!networkUtil.isInternetAvailable()) {
-            response.value = MainViewState.ShowRequestError(R.string.error_internet)
-            return response.value
-        }
-
         val cachedList = Cache.contentFeed[category]
         if (cachedList != null && cachedList.isNotEmpty()) {
             response.value = MainViewState.ShowContentFeed(cachedList!!)
+            return response.value
+        }
+
+        if (!networkUtil.isInternetAvailable()) {
+            response.value = MainViewState.ShowRequestError(R.string.error_internet)
             return response.value
         }
 

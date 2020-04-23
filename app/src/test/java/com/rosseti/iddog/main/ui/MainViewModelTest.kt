@@ -38,6 +38,7 @@ class MainViewModelTest {
     @Test
     fun fetchFeedContent_whenInternetIsNotAvailable() {
         val category = "Husky"
+        Cache.contentFeed[category] = emptyList()
         every { networkUtil.isInternetAvailable() } returns false
 
         val response = viewModel.fetchFeedContent(category)
