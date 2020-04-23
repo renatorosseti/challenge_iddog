@@ -25,7 +25,7 @@ class LoginActivity : BaseActivity() {
         handleSubmitEmailEventListener()
     }
 
-    fun observeViewModel() {
+    private fun observeViewModel() {
         viewModel.response.observe(this, Observer {
             progressDialog.hide()
             when (it) {
@@ -45,14 +45,14 @@ class LoginActivity : BaseActivity() {
         })
     }
 
-    fun handleSubmitEmailEventListener() {
+    private fun handleSubmitEmailEventListener() {
         submitEmail.setOnClickListener {
             val email: String = emailEditText.text.toString()
             viewModel.checkEmailLogin(email)
         }
     }
 
-    fun navigateToMainScreen() {
+    private fun navigateToMainScreen() {
         val intent = Intent(this, MainActivity::class.java)
         startActivity(intent)
         finish()

@@ -2,9 +2,7 @@ package com.rosseti.iddog.main.ui
 
 import android.content.Intent
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.NavHostFragment
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -15,6 +13,7 @@ import com.rosseti.iddog.main.details.DetailsActivity
 import dagger.android.support.DaggerFragment
 import kotlinx.android.synthetic.main.fragment_main.*
 import javax.inject.Inject
+
 
 class MainFragment : DaggerFragment() {
 
@@ -29,11 +28,14 @@ class MainFragment : DaggerFragment() {
 
     lateinit var mainAdapter: MainAdapter
 
+    lateinit var category: String
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        setHasOptionsMenu(true)
         val root = inflater.inflate(R.layout.fragment_main, container, false)
         return root
     }
@@ -42,8 +44,8 @@ class MainFragment : DaggerFragment() {
         super.onResume()
         setLayoutManager()
         observeViewModel()
-        val category = NavHostFragment.findNavController(this).currentDestination!!.label.toString()
-        viewModel.fetchFeedContent(category = category.toLowerCase())
+        category = NavHostFragment.findNavController(this).currentDestination!!.label.toString().toLowerCase()
+        viewModel.fetchFeedContent(category = category)
     }
 
     private fun setLayoutManager() {
@@ -67,6 +69,18 @@ class MainFragment : DaggerFragment() {
                 }
             }
         })
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater) {
+        inflater.inflate(R.menu.frag_main, menu)
+        super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.getItemId()) {
+            R.id.action_retry -> viewModel.fetchFeedContent(category = category)
+        }
+        return true
     }
 
     private fun updateAdapter(images: List<String>) {
