@@ -1,6 +1,8 @@
 package com.rosseti.iddog.di
 
+import com.rosseti.iddog.IddogApp
 import com.rosseti.iddog.api.IddogApi
+import com.rosseti.iddog.util.NetworkUtil
 import dagger.Module
 import dagger.Provides
 import retrofit2.Retrofit
@@ -17,4 +19,7 @@ class NetworkModule {
             .addConverterFactory(MoshiConverterFactory.create())
             .build()
             .create(IddogApi::class.java)
+
+    @Provides
+    fun providesInternetUtil(application: IddogApp) = NetworkUtil(application)
 }

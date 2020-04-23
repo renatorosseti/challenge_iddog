@@ -1,9 +1,7 @@
 package com.rosseti.iddog.login
 
 import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.*
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import com.rosseti.iddog.R
@@ -11,15 +9,25 @@ import com.rosseti.iddog.data.Cache
 import com.rosseti.iddog.model.HttpCallFailureException
 import com.rosseti.iddog.model.NoNetworkException
 import com.rosseti.iddog.model.ServerUnreachableException
+import com.rosseti.iddog.util.NetworkUtil
 
 class LoginViewModel (
-    private val repository: LoginRepository): ViewModel() {
+    private val repository: LoginRepository,
+    private val networkUtil: NetworkUtil): ViewModel() {
 
-    val response = MutableLiveData<LoginViewState>()
+    val response = MediatorLiveData<LoginViewState>()
 
     private val disposable = CompositeDisposable()
 
     private val TAG = LoginViewModel::class.simpleName
+
+    init {
+        response.addSource(networkUtil, Observer {
+            if (!networkUtil.isInternetAvailable()) {
+                response.value = LoginViewState.ShowRequestError(R.string.error_internet)
+            }
+        })
+    }
 
     override fun onCleared() {
         super.onCleared()
@@ -27,6 +35,16 @@ class LoginViewModel (
     }
 
     fun checkEmailLogin(email: String): LoginViewState? {
+        if (email.isEmpty()) {
+            response.value = LoginViewState.ShowRequestError(R.string.error_email_empty)
+            return response.value
+        }
+
+        if (!networkUtil.isInternetAvailable()) {
+            response.value = LoginViewState.ShowRequestError(R.string.error_internet)
+            return response.value
+        }
+
         response.value = LoginViewState.ShowLoadingState
         if (Cache.apiToken.isNotEmpty()) {
             response.value = LoginViewState.ShowMainScreen
@@ -43,6 +61,7 @@ class LoginViewModel (
                 )
             disposable.add(loadUserEmail)
         }
+
         return response.value
     }
 
@@ -61,7 +80,7 @@ class LoginViewModel (
                 Log.e(TAG,"Call failed. ${error.message}")
             }
             else -> {
-                response.value = LoginViewState.ShowRequestError(R.string.error_email)
+                response.value = LoginViewState.ShowRequestError(R.string.error_email_format)
                 Log.e(TAG,"Error: ${error.message}")
             }
         }

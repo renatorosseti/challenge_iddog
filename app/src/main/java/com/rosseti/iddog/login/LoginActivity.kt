@@ -47,14 +47,8 @@ class LoginActivity : BaseActivity() {
 
     fun handleSubmitEmailEventListener() {
         submitEmail.setOnClickListener {
-            if (internetUtil.isInternetAvailable()) {
-                val email: String = emailEditText.text.toString()
-                viewModel.checkEmailLogin(email)
-            } else {
-                errorDialog.show(
-                    context = this,
-                    message = getString(R.string.error_internet))
-            }
+            val email: String = emailEditText.text.toString()
+            viewModel.checkEmailLogin(email)
         }
     }
 

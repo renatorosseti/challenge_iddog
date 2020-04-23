@@ -1,5 +1,6 @@
 package com.rosseti.iddog.main.ui
 
+import com.rosseti.iddog.util.NetworkUtil
 import dagger.Module
 import dagger.Provides
 
@@ -7,6 +8,6 @@ import dagger.Provides
 class MainViewModelModule {
 
     @Provides
-    fun providesMainModelView(repository: MainRepository) = MainViewModel(repository)
+    fun providesMainModelView(repository: MainRepository, networkUtil: NetworkUtil) = MainViewModel(repository, networkUtil)
 
 }

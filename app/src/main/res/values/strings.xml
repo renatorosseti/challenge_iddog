@@ -2,8 +2,9 @@
     <string name="app_name">iddog</string>
     <string name="progress_message">Please wait...</string>
     <string name="error">Error</string>
-    <string name="error_internet">You are currently set to offline, please go online to connect to `id`dog</string>
-    <string name="error_email">Email is not valid! Please fill up a valid email and try again!</string>
+    <string name="error_internet">You are currently set to offline, please go online to connect to iddog.</string>
+    <string name="error_email_format">Email is not valid! Please fill up a valid email and try again.</string>
+    <string name="error_email_empty">Email is empty! Please fill up a valid email and try again.</string>
     <string name="error_request">Request error, try again later!</string>
     <string name="error_undefined">Undefined error, try again later!</string>
     <string name="retry">Retry</string>

@@ -6,6 +6,7 @@ import com.rosseti.iddog.R
 import com.rosseti.iddog.data.Cache
 import com.rosseti.iddog.model.FeedResponse
 import com.rosseti.iddog.model.NetworkException
+import com.rosseti.iddog.util.NetworkUtil
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
@@ -22,24 +23,25 @@ class MainViewModelTest {
     @MockK
     lateinit var mainRepository: MainRepository
 
+    @MockK
+    lateinit var networkUtil: NetworkUtil
+
     @get:Rule
     var rule: TestRule = InstantTaskExecutorRule()
 
     @Before
     fun setup() {
         MockKAnnotations.init(this)
-        viewModel = MainViewModel(mainRepository)
+        viewModel = MainViewModel(mainRepository, networkUtil)
     }
 
-    @Test(expected = NetworkException::class)
-    fun fetchFeedContent_whenExceptionOccurs() {
-        var category = "husky"
-        var apiToken = "Wrong api token"
-        Cache.apiToken = apiToken
+    @Test
+    fun fetchFeedContent_whenInternetIsNotAvailable() {
+        val category = "Husky"
+        every { networkUtil.isInternetAvailable() } returns false
 
-        every { mainRepository.loadFeed(category = category, apiToken = apiToken) } throws NetworkException(Throwable())
         val response = viewModel.fetchFeedContent(category)
-        Truth.assertThat(response).isEqualTo(MainViewState.ShowRequestError(R.string.error_request))
+        Truth.assertThat(response).isEqualTo(MainViewState.ShowRequestError(R.string.error_internet))
     }
 
     @Test
@@ -47,6 +49,7 @@ class MainViewModelTest {
         val category = "Husky"
         var list: List<String> = listOf("Images")
         Cache.contentFeed[category] = list
+        every { networkUtil.isInternetAvailable() } returns true
 
         val response = viewModel.fetchFeedContent(category)
         Truth.assertThat(response).isEqualTo(MainViewState.ShowContentFeed(list))
@@ -58,9 +61,22 @@ class MainViewModelTest {
         val apiToken = "Correct api token"
         var list: List<String> = listOf("Images")
         Cache.apiToken = apiToken
-
+        every { networkUtil.isInternetAvailable() } returns true
         every { mainRepository.loadFeed(category, apiToken) } returns Single.just(FeedResponse(list = list, category = category))
+
         val response = viewModel.fetchFeedContent(category)
         Truth.assertThat(response).isEqualTo(MainViewState.ShowContentFeed(list))
+    }
+
+    @Test(expected = NetworkException::class)
+    fun fetchFeedContent_whenExceptionOccurs() {
+        var category = "husky"
+        var apiToken = "Wrong api token"
+        Cache.apiToken = apiToken
+        every { networkUtil.isInternetAvailable() } returns true
+        every { mainRepository.loadFeed(category = category, apiToken = apiToken) } throws NetworkException(Throwable())
+
+        val response = viewModel.fetchFeedContent(category)
+        Truth.assertThat(response).isEqualTo(MainViewState.ShowRequestError(R.string.error_request))
     }
 }

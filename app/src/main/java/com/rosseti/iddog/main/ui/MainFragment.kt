@@ -2,7 +2,6 @@ package com.rosseti.iddog.main.ui
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,9 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.rosseti.iddog.R
 import com.rosseti.iddog.dialog.ErrorDialog
 import com.rosseti.iddog.dialog.ProgressDialog
-import com.rosseti.iddog.main.MainActivity
 import com.rosseti.iddog.main.details.DetailsActivity
-import com.rosseti.iddog.util.InternetUtil
 import dagger.android.support.DaggerFragment
 import kotlinx.android.synthetic.main.fragment_main.*
 import javax.inject.Inject
@@ -25,13 +22,12 @@ class MainFragment : DaggerFragment() {
     lateinit var viewModel: MainViewModel
 
     @Inject
-    lateinit var internetUtil: InternetUtil
-
-    @Inject
     lateinit var progressDialog: ProgressDialog
 
     @Inject
     lateinit var errorDialog: ErrorDialog
+
+    lateinit var mainAdapter: MainAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -44,15 +40,23 @@ class MainFragment : DaggerFragment() {
 
     override fun onResume() {
         super.onResume()
+        setLayoutManager()
+        observeViewModel()
         val category = NavHostFragment.findNavController(this).currentDestination!!.label.toString()
         viewModel.fetchFeedContent(category = category.toLowerCase())
+    }
 
+    private fun setLayoutManager() {
+        recyclerView.layoutManager = LinearLayoutManager(context)
+    }
+
+    private fun observeViewModel() {
         viewModel.response.observe(this, Observer {
-            when(it) {
+            when (it) {
                 is MainViewState.ShowLoadingState -> progressDialog.show(context = context!!)
                 is MainViewState.ShowContentFeed -> {
                     progressDialog.hide()
-                    setAdapter(it.images)
+                    updateAdapter(it.images)
                 }
                 is MainViewState.ShowRequestError -> {
                     progressDialog.hide()
@@ -65,9 +69,8 @@ class MainFragment : DaggerFragment() {
         })
     }
 
-    private fun setAdapter(images: List<String>) {
-        val mainAdapter = MainAdapter(images = images)
-        recyclerView.layoutManager = LinearLayoutManager(context)
+    private fun updateAdapter(images: List<String>) {
+        mainAdapter = MainAdapter(images)
         recyclerView.adapter = mainAdapter
         mainAdapter?.onItemClick = { it -> run {
             val intent = Intent(context, DetailsActivity::class.java)
