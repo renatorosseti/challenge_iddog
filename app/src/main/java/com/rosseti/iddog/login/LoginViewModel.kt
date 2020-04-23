@@ -1,12 +1,13 @@
 package com.rosseti.iddog.login
 
 import android.util.Log
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.rosseti.iddog.data.Cache
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import com.rosseti.iddog.R
+import com.rosseti.iddog.data.Cache
 import com.rosseti.iddog.model.HttpCallFailureException
 import com.rosseti.iddog.model.NoNetworkException
 import com.rosseti.iddog.model.ServerUnreachableException
@@ -25,19 +26,24 @@ class LoginViewModel (
         disposable.clear()
     }
 
-    fun checkEmailLogin(email: String) {
+    fun checkEmailLogin(email: String): LoginViewState? {
         response.value = LoginViewState.ShowLoadingState
-        val loadUserEmail: Disposable = repository.loadUserEmail(email)
-            .subscribe (
-                {
-                    Cache.apiToken = it.user.token
-                    response.value = LoginViewState.ShowMainScreen
-                },
-                {
-                    showError(it)
-                }
-            )
-        disposable.add(loadUserEmail)
+        if (Cache.apiToken.isNotEmpty()) {
+            response.value = LoginViewState.ShowMainScreen
+        } else {
+            val loadUserEmail: Disposable = repository.loadUserEmail(email)
+                .subscribe (
+                    {
+                        Cache.apiToken = it.user.token
+                        response.value = LoginViewState.ShowMainScreen
+                    },
+                    {
+                        showError(it)
+                    }
+                )
+            disposable.add(loadUserEmail)
+        }
+        return response.value
     }
 
     private fun showError(error: Throwable) {

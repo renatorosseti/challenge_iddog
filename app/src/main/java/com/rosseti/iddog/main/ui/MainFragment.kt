@@ -1,6 +1,8 @@
 package com.rosseti.iddog.main.ui
 
+import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,6 +12,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.rosseti.iddog.R
 import com.rosseti.iddog.dialog.ErrorDialog
 import com.rosseti.iddog.dialog.ProgressDialog
+import com.rosseti.iddog.main.MainActivity
+import com.rosseti.iddog.main.details.DetailsActivity
 import com.rosseti.iddog.util.InternetUtil
 import dagger.android.support.DaggerFragment
 import kotlinx.android.synthetic.main.fragment_main.*
@@ -42,13 +46,13 @@ class MainFragment : DaggerFragment() {
         super.onResume()
         val category = NavHostFragment.findNavController(this).currentDestination!!.label.toString()
         viewModel.fetchFeedContent(category = category.toLowerCase())
-        recyclerView.layoutManager = LinearLayoutManager(context)
+
         viewModel.response.observe(this, Observer {
             when(it) {
                 is MainViewState.ShowLoadingState -> progressDialog.show(context = context!!)
                 is MainViewState.ShowContentFeed -> {
                     progressDialog.hide()
-                    recyclerView.adapter = MainAdapter(images = it.images)
+                    setAdapter(it.images)
                 }
                 is MainViewState.ShowRequestError -> {
                     progressDialog.hide()
@@ -59,5 +63,17 @@ class MainFragment : DaggerFragment() {
                 }
             }
         })
+    }
+
+    private fun setAdapter(images: List<String>) {
+        val mainAdapter = MainAdapter(images = images)
+        recyclerView.layoutManager = LinearLayoutManager(context)
+        recyclerView.adapter = mainAdapter
+        mainAdapter?.onItemClick = { it -> run {
+            val intent = Intent(context, DetailsActivity::class.java)
+            intent.putExtra("imageUrl", it)
+            startActivity(intent)
+        }
+        }
     }
 }

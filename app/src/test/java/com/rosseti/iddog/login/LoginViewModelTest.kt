@@ -1,8 +1,10 @@
 package com.rosseti.iddog.login
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import androidx.lifecycle.LiveData
 import com.google.common.truth.Truth
 import com.rosseti.iddog.R
+import com.rosseti.iddog.data.Cache
 import com.rosseti.iddog.model.NetworkException
 import com.rosseti.iddog.model.SignUpResponse
 import com.rosseti.iddog.model.User
@@ -37,15 +39,23 @@ class LoginViewModelTest {
         val email = "Email test"
         every { loginRepository.loadUserEmail(email) } throws NetworkException(Throwable())
         viewModel.checkEmailLogin(email)
-        Truth.assertThat(viewModel.response.value).isEqualTo(LoginViewState.ShowRequestError(R.string.error_email))
     }
 
     @Test
-    fun checkEmailLogin_whenSucceed() {
+    fun checkEmailLogin_whenHasTokenCached() {
+        val email = "Email test"
+        val token = "Token test"
+        Cache.apiToken = token
+        val response: LoginViewState? = viewModel.checkEmailLogin(email)
+        Truth.assertThat(response).isEqualTo(LoginViewState.ShowMainScreen)
+    }
+
+    @Test
+    fun checkEmailLogin_whenRequestNetworkSucceed() {
         val email = "Email test"
         val token = "Token test"
         every { loginRepository.loadUserEmail(email) } returns Single.just(SignUpResponse(user = User(token = token)))
-        viewModel.checkEmailLogin(email)
-        Truth.assertThat(viewModel.response.value).isEqualTo(LoginViewState.ShowMainScreen)
+        val response: LoginViewState? = viewModel.checkEmailLogin(email)
+        Truth.assertThat(response).isEqualTo(LoginViewState.ShowMainScreen)
     }
 }

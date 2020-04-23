@@ -12,6 +12,8 @@ import kotlinx.android.synthetic.main.content_item.view.*
 class MainAdapter(
     private val images: List<String>) : RecyclerView.Adapter<MainAdapter.ViewHolder>() {
 
+    var onItemClick: ((String) -> Unit)? = null
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.content_item, parent, false)
         return ViewHolder(view)
@@ -21,7 +23,13 @@ class MainAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) = holder.bind(images[position])
 
-    class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+
+        init {
+            itemView.setOnClickListener {
+                onItemClick?.invoke(images[adapterPosition])
+            }
+        }
 
         fun bind(image: String) {
             Glide.with(itemView)

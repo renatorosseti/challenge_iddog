@@ -5,7 +5,6 @@ import android.os.Bundle
 import androidx.lifecycle.Observer
 import com.rosseti.iddog.R
 import com.rosseti.iddog.base.BaseActivity
-import com.rosseti.iddog.data.Cache
 import com.rosseti.iddog.main.MainActivity
 import kotlinx.android.synthetic.main.activity_login.*
 import javax.inject.Inject
@@ -23,7 +22,6 @@ class LoginActivity : BaseActivity() {
     override fun onResume() {
         super.onResume()
         observeViewModel()
-        checkApiTokenSession()
         handleSubmitEmailEventListener()
     }
 
@@ -45,12 +43,6 @@ class LoginActivity : BaseActivity() {
                 }
             }
         })
-    }
-
-    fun checkApiTokenSession() {
-        if (Cache.apiToken.isNotEmpty()) {
-            navigateToMainScreen()
-        }
     }
 
     fun handleSubmitEmailEventListener() {

@@ -26,19 +26,26 @@ class MainViewModel(
         disposable.clear()
     }
 
-    fun fetchFeedContent(category: String) {
+    fun fetchFeedContent(category: String): MainViewState? {
         response.value = MainViewState.ShowLoadingState
-        val loadFeedContent: Disposable = repository.loadFeed(category, Cache.apiToken)
-            .subscribe (
-                {
-                    response.value = MainViewState.ShowContentFeed(it.list)
-                },
-                {
-                    response.value = MainViewState.ShowRequestError(R.string.error_request)
-                    showError(it)
-                }
-            )
-        disposable.add(loadFeedContent)
+        val cachedList = Cache.contentFeed[category]
+        if (cachedList != null && cachedList.isNotEmpty()) {
+            response.value = MainViewState.ShowContentFeed(cachedList!!)
+        } else {
+            val loadFeedContent: Disposable = repository.loadFeed(category, Cache.apiToken)
+                .subscribe (
+                    {
+                        response.value = MainViewState.ShowContentFeed(it.list)
+                        Cache.contentFeed[category] = it.list
+                    },
+                    {
+                        response.value = MainViewState.ShowRequestError(R.string.error_request)
+                        showError(it)
+                    }
+                )
+            disposable.add(loadFeedContent)
+        }
+        return response.value
     }
 
     private fun showError(error: Throwable) {

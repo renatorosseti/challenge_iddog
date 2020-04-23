@@ -38,8 +38,18 @@ class MainViewModelTest {
         Cache.apiToken = apiToken
 
         every { mainRepository.loadFeed(category = category, apiToken = apiToken) } throws NetworkException(Throwable())
-        viewModel.fetchFeedContent(category)
-        Truth.assertThat(viewModel.response.value).isEqualTo(MainViewState.ShowRequestError(R.string.error_request))
+        val response = viewModel.fetchFeedContent(category)
+        Truth.assertThat(response).isEqualTo(MainViewState.ShowRequestError(R.string.error_request))
+    }
+
+    @Test
+    fun fetchFeedContent_whenHasContentFeedCached() {
+        val category = "Husky"
+        var list: List<String> = listOf("Images")
+        Cache.contentFeed[category] = list
+
+        val response = viewModel.fetchFeedContent(category)
+        Truth.assertThat(response).isEqualTo(MainViewState.ShowContentFeed(list))
     }
 
     @Test
@@ -50,7 +60,7 @@ class MainViewModelTest {
         Cache.apiToken = apiToken
 
         every { mainRepository.loadFeed(category, apiToken) } returns Single.just(FeedResponse(list = list, category = category))
-        viewModel.fetchFeedContent(category)
-        Truth.assertThat(viewModel.response.value).isEqualTo(MainViewState.ShowContentFeed(list))
+        val response = viewModel.fetchFeedContent(category)
+        Truth.assertThat(response).isEqualTo(MainViewState.ShowContentFeed(list))
     }
 }
